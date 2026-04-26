@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIってどう使ってる？みんなで話しましょう</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #FFF9F0; font-family: 'Noto Sans JP', sans-serif; padding: 1.5rem 1rem 3rem; }
+  .sw { max-width: 580px; margin: 0 auto; }
+
+  .header-card {
+    background: linear-gradient(135deg, #FFE5B4 0%, #FFDAB9 50%, #FFD1DC 100%);
+    border-radius: 20px;
+    padding: 1.5rem 1.5rem 1.2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header-deco { position: absolute; font-size: 40px; opacity: 0.18; }
+  .header-deco.d1 { top: -8px; left: 8px; }
+  .header-deco.d2 { bottom: -10px; right: 10px; }
+  .header-deco.d3 { top: 4px; right: 30px; font-size: 24px; opacity: 0.22; }
+  .header-title { font-size: 17px; font-weight: 700; color: #C05A00; margin-bottom: 4px; }
+  .header-sub { font-size: 12px; color: #D4722A; opacity: 0.85; }
+
+  .q-card {
+    background: #FFFDF7;
+    border: 1.5px solid #FFE0A0;
+    border-radius: 18px;
+    padding: 1.2rem 1.3rem;
+    margin-bottom: 1.2rem;
+  }
+  .q-num { display: inline-block; background: #FFBB55; color: #7A3D00; font-size: 11px; font-weight: 700; border-radius: 99px; padding: 2px 10px; margin-bottom: 8px; }
+  .q-label { font-size: 14px; font-weight: 700; color: #5C3200; margin-bottom: 6px; }
+  .q-sub { font-size: 12px; color: #B8742A; margin-bottom: 1rem; }
+  .required-badge { display: inline-block; font-size: 10px; background: #FF8C42; color: white; border-radius: 99px; padding: 1px 7px; margin-left: 6px; vertical-align: middle; }
+
+  .choice-group { display: flex; flex-direction: column; gap: 8px; }
+  .choice-btn {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    border: 1.5px solid #FFD890;
+    border-radius: 12px;
+    cursor: pointer;
+    background: #FFFBF0;
+    font-size: 13px; color: #5C3200;
+    text-align: left;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: all 0.15s;
+  }
+  .choice-btn:hover { background: #FFF3CC; border-color: #FFBB55; }
+  .choice-btn.selected { border-color: #FF9922; background: #FFF0D0; color: #7A3D00; }
+  .radio-circle { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #FFD890; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .choice-btn.selected .radio-circle { border-color: #FF9922; background: #FF9922; }
+  .radio-dot { width: 6px; height: 6px; border-radius: 50%; background: white; display: none; }
+  .choice-btn.selected .radio-dot { display: block; }
+
+  .day-grid { display: flex; flex-direction: column; gap: 10px; }
+  .day-row { display: grid; grid-template-columns: 70px 1fr; gap: 8px; align-items: start; }
+  .day-pill { display: inline-block; font-size: 12px; font-weight: 700; color: #7A3D00; background: #FFE5A0; border-radius: 99px; padding: 4px 10px; text-align: center; }
+  .slots { display: flex; flex-direction: column; gap: 6px; padding-top: 3px; }
+  .slot { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .slot input[type="time"] { font-size: 13px; padding: 5px 8px; border: 1.5px solid #FFD890; border-radius: 10px; background: #FFFBF0; color: #5C3200; font-family: 'Noto Sans JP', sans-serif; }
+  .slot-sep { font-size: 13px; color: #C07830; }
+  .remove-btn { font-size: 16px; color: #FFB060; background: none; border: none; cursor: pointer; padding: 0 2px; line-height: 1; }
+  .remove-btn:hover { color: #FF7020; }
+  .add-slot { font-size: 12px; color: #E07820; background: none; border: none; cursor: pointer; padding: 3px 0; font-family: 'Noto Sans JP', sans-serif; }
+  .allday-label { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #B8742A; padding-top: 4px; cursor: pointer; }
+  .allday-label input[type="checkbox"] { accent-color: #FF9922; width: 14px; height: 14px; }
+
+  textarea { width: 100%; font-size: 13px; padding: 10px 12px; border: 1.5px solid #FFD890; border-radius: 12px; background: #FFFBF0; color: #5C3200; resize: vertical; min-height: 80px; font-family: 'Noto Sans JP', sans-serif; }
+  textarea::placeholder { color: #C8A070; }
+
+  .submit-btn {
+    width: 100%; padding: 13px;
+    background: linear-gradient(90deg, #FFB347, #FFCC66);
+    color: #7A3D00; border: none;
+    border-radius: 14px; font-size: 15px; font-weight: 700;
+    cursor: pointer; margin-top: 0.5rem;
+    font-family: 'Noto Sans JP', sans-serif;
+    letter-spacing: 0.04em;
+  }
+  .submit-btn:hover { opacity: 0.88; }
+
+  .thanks { display: none; text-align: center; padding: 2rem 1rem; }
+  .thanks-icon { font-size: 48px; margin-bottom: 1rem; }
+  .thanks-title { font-size: 18px; font-weight: 700; color: #C05A00; margin-bottom: 0.5rem; }
+  .thanks-sub { font-size: 13px; color: #B8742A; }
+</style>
+</head>
+<body>
+<div class="sw">
+  <div id="form-area">
+    <div class="header-card">
+      <span class="header-deco d1">✨</span>
+      <span class="header-deco d2">🍊</span>
+      <span class="header-deco d3">💛</span>
+      <div class="header-title">AIってどう使ってる？みんなで話しましょう🤖✨</div>
+      <div class="header-sub">にほんご先生ラウンジ ／ ご回答よろしくお願いします🌼</div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-num">Q 1</div>
+      <div class="q-label">興味ありますか？<span class="required-badge">必須</span></div>
+      <div class="choice-group" id="q1">
+        <button class="choice-btn" onclick="sel(this,'q1')"><span class="radio-circle"><span class="radio-dot"></span></span>ぜひ参加したい！🙌</button>
+        <button class="choice-btn" onclick="sel(this,'q1')"><span class="radio-circle"><span class="radio-dot"></span></span>興味はある</button>
+        <button class="choice-btn" onclick="sel(this,'q1')"><span class="radio-circle"><span class="radio-dot"></span></span>どっちでもいいかな</button>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-num">Q 2</div>
+      <div class="q-label">参加できない曜日・時間帯を教えてください</div>
+      <div class="q-sub">「＋ 時間帯を追加」で複数入力できます。終日NGの場合はチェックを🙅</div>
+      <div class="day-grid" id="day-grid"></div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-num">Q 3</div>
+      <div class="q-label">ひとことコメント（任意）</div>
+      <textarea id="comment" placeholder="AIツールについて聞きたいこと、やってみたいことなど、なんでもどうぞ🌸"></textarea>
+    </div>
+
+    <button class="submit-btn" onclick="handleSubmit()">✉️ 回答を送信する</button>
+  </div>
+
+  <div class="thanks" id="thanks-area">
+    <div class="thanks-icon">🌼</div>
+    <div class="thanks-title">ありがとうございました！</div>
+    <div class="thanks-sub">回答を受け付けました。またラウンジでお会いしましょう😊</div>
+  </div>
+</div>
+
+<script>
+const DAYS = ['月曜日','火曜日','水曜日','木曜日','金曜日','土曜日','日曜日'];
+const state = {};
+DAYS.forEach(d => { state[d] = { allDay: false, slots: [] }; });
+
+function sel(btn, gid) {
+  document.querySelectorAll('#'+gid+' .choice-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function render() {
+  const grid = document.getElementById('day-grid');
+  grid.innerHTML = '';
+  DAYS.forEach(day => {
+    const d = state[day];
+    const row = document.createElement('div');
+    row.className = 'day-row';
+    const nameEl = document.createElement('div');
+    nameEl.innerHTML = `<span class="day-pill">${day}</span>`;
+    const slotsEl = document.createElement('div');
+    slotsEl.className = 'slots';
+    if (!d.allDay) {
+      d.slots.forEach((slot, i) => {
+        const s = document.createElement('div');
+        s.className = 'slot';
+        s.innerHTML = `<input type="time" value="${slot.from}" onchange="upd('${day}',${i},'from',this.value)"><span class="slot-sep">〜</span><input type="time" value="${slot.to}" onchange="upd('${day}',${i},'to',this.value)"><button class="remove-btn" onclick="rm('${day}',${i})">×</button>`;
+        slotsEl.appendChild(s);
+      });
+      const addBtn = document.createElement('button');
+      addBtn.className = 'add-slot';
+      addBtn.textContent = '＋ 時間帯を追加';
+      addBtn.onclick = () => { state[day].slots.push({from:'09:00',to:'12:00'}); render(); };
+      slotsEl.appendChild(addBtn);
+    }
+    const lbl = document.createElement('label');
+    lbl.className = 'allday-label';
+    lbl.innerHTML = `<input type="checkbox" ${d.allDay?'checked':''} onchange="toggleAD('${day}',this.checked)"> 終日NG`;
+    slotsEl.appendChild(lbl);
+    row.appendChild(nameEl);
+    row.appendChild(slotsEl);
+    grid.appendChild(row);
+  });
+}
+
+function upd(day,i,k,v){ state[day].slots[i][k]=v; }
+function rm(day,i){ state[day].slots.splice(i,1); render(); }
+function toggleAD(day,v){ state[day].allDay=v; render(); }
+
+function handleSubmit() {
+  if (!document.querySelector('#q1 .selected')) {
+    alert('Q1を選択してください🙏');
+    return;
+  }
+  document.getElementById('form-area').style.display = 'none';
+  document.getElementById('thanks-area').style.display = 'block';
+}
+
+render();
+</script>
+</body>
+</html>
